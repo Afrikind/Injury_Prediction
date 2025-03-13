@@ -8,27 +8,20 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 import plotly.express as px
 import plotly.graph_objects as go
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 # Load and preprocess the dataset
 @st.cache_data
 def load_and_preprocess_data():
-    data = pd.read_csv('Loandataset.csv')
+    data = pd.read_csv('injury_data.csv')
 
     # Handle missing values
     imputer = SimpleImputer(strategy='mean')
-    data['term_in_months'] = imputer.fit_transform(data[['term_in_months']])
-
-    # Feature Engineering
-    data['income_to_loan_ratio'] = data['income'] / (data['loan_amount'] + 1)  # Avoid divide by zero
-    data['loan_interest_product'] = data['loan_amount'] * data['rate_of_interest']
+    data.iloc[:, :] = imputer.fit_transform(data)
 
     # Select features and target
-    features = ['loan_amount', 'rate_of_interest', 'Interest_rate_spread', 'Upfront_charges',
-                'term_in_months', 'property_value', 'income', 'Credit_Score',
-                'income_to_loan_ratio', 'loan_interest_product']
-    target = 'Status'
+    features = ['Player_Age', 'Player_Weight', 'Player_Height', 'Previous_Injuries',
+                'Training_Intensity', 'Recovery_Time', 'Heart_Rate']
+    target = 'Likelihood_of_Injury'
 
     X = data[features].values
     y = data[target].values
@@ -68,37 +61,34 @@ def plot_training_history(history):
 
 # Streamlit Web Application
 def main():
-    st.title("💰 Loan Default Prediction App")
-    st.write("Predict loan defaults using advanced neural networks and interactive analytics.")
+    st.title("🏀 Sports Injury Prediction App")
+    st.write("Predict the likelihood of sports injuries using deep learning.")
 
     data, X, y, scaler = load_and_preprocess_data()
     model, history, accuracy = build_and_train_model(X, y)
 
-    st.sidebar.title("🔧 Input Loan Details")
-    loan_amount = st.sidebar.slider("Loan Amount ($)", 0, 500000, 10000, step=1000)
-    rate_of_interest = st.sidebar.slider("Rate of Interest (%)", 0.0, 20.0, 5.0, step=0.1)
-    interest_rate_spread = st.sidebar.slider("Interest Rate Spread", 0.0, 10.0, 2.0, step=0.1)
-    upfront_charges = st.sidebar.slider("Upfront Charges ($)", 0, 10000, 500, step=100)
-    term_in_months = st.sidebar.slider("Term in Months", 12, 360, 120, step=12)
-    property_value = st.sidebar.slider("Property Value ($)", 0, 1000000, 200000, step=5000)
-    income = st.sidebar.slider("Income ($)", 0, 1000000, 50000, step=5000)
-    credit_score = st.sidebar.slider("Credit Score", 300, 850, 650, step=1)
+    st.sidebar.title("⚙️ Input Athlete Data")
+    player_age = st.sidebar.slider("Age", 10, 50, 25, step=1)
+    player_weight = st.sidebar.slider("Weight (kg)", 30, 120, 70, step=1)
+    player_height = st.sidebar.slider("Height (cm)", 140, 220, 175, step=1)
+    previous_injuries = st.sidebar.slider("Previous Injuries", 0, 10, 1, step=1)
+    training_intensity = st.sidebar.slider("Training Intensity (1-10)", 1, 10, 5, step=1)
+    recovery_time = st.sidebar.slider("Recovery Time (days)", 0, 30, 7, step=1)
+    heart_rate = st.sidebar.slider("Heart Rate (BPM)", 40, 200, 80, step=1)
 
-    if st.sidebar.button("🚀 Estimate"):
-        user_input = np.array([[loan_amount, rate_of_interest, interest_rate_spread,
-                                upfront_charges, term_in_months, property_value,
-                                income, credit_score,
-                                income / (loan_amount + 1),  # income_to_loan_ratio
-                                loan_amount * rate_of_interest]])  # loan_interest_product
+    if st.sidebar.button("🚀 Predict Injury Risk"):
+        user_input = np.array([[player_age, player_weight, player_height,
+                                previous_injuries, training_intensity,
+                                recovery_time, heart_rate]])
         user_input = scaler.transform(user_input)
 
         prediction = model.predict(user_input)
         prediction = (prediction > 0.5).astype(int)
 
         if prediction[0][0] == 1:
-            st.error("❌ Prediction: Default")
+            st.error("❌ High Injury Risk")
         else:
-            st.success("✅ Prediction: No Default")
+            st.success("✅ Low Injury Risk")
 
     st.write("### 📊 Dataset Insights")
     st.dataframe(data.head(10))
@@ -108,7 +98,7 @@ def main():
     plot_training_history(history)
 
     st.write("### 🔍 Correlation Heatmap")
-    fig = px.imshow(data.corr(), text_auto=True, color_continuous_scale="RdBu")  # Fixed here
+    fig = px.imshow(data.corr(), text_auto=True, color_continuous_scale="RdBu")
     st.plotly_chart(fig)
 
 if __name__ == "__main__":
