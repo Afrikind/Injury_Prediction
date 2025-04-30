@@ -9,12 +9,4 @@ requests==2.31.0
 openpyxl==3.1.2
 matplotlib==3.7.1
 seaborn==0.12.2
-
-SMARTWATCH_CONFIG = {
-    'fitbit': {
-        'client_id': 'YOUR_FITBIT_CLIENT_ID',
-        'client_secret': 'YOUR_FITBIT_CLIENT_SECRET',
-        'redirect_uri': 'http://localhost:8501/callback'
-    }
-}
  
