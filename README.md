@@ -1,22 +1,67 @@
+# Elite Sports Injury Prediction System
 
-Name: Nnaemeka_Anthony_Madukaku
+## Overview
+This project implements an advanced injury prediction system for athletes using machine learning. The system analyzes various factors including heart rate, training intensity, and recovery time to predict injury risk and provide personalized recommendations.
 
+## Features
+- Real-time injury risk assessment
+- Smartwatch integration (Fitbit & Garmin)
+- Personalized training recommendations
+- User authentication system
+- Interactive dashboard with performance metrics
+- Detailed analysis reports
 
-Roll_Number: 10201100096
+## Technical Stack
+- Python 3.8+
+- Streamlit
+- Scikit-learn
+- Pandas
+- NumPy
+- Plotly
+- Imbalanced-learn
 
+## Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/Injury_Prediction.git
+cd Injury_Prediction
+```
 
-Project Overview:
+2. Install required packages:
+```bash
+pip install -r requirements.txt
+```
 
-The Sports Injury Prediction Application is an advanced machine learning tool designed to assess the risk of injury based on various athlete parameters. This system enables coaches, athletes, and sports scientists to make data-driven decisions, reducing injury risks and optimizing performance.
+3. Run the application:
+```bash
+streamlit run Injury_Prediction_app.py
+```
 
+## Project Structure
+```
+Injury_Prediction/
+├── Injury_Prediction_app.py    # Main application file
+├── injury_data.csv            # Dataset
+├── requirements.txt           # Dependencies
+├── users.json                # User authentication data
+└── README.md                 # Documentation
+```
 
-Key Features:
-User-Friendly Input Interface: Users can enter relevant details such as age, training intensity, previous injuries, heart rate...
+## Usage
+1. Launch the application
+2. Create an account or login
+3. Navigate through the dashboard
+4. Input athlete data for risk assessment
+5. View detailed analysis and recommendations
 
-Predictive Model: A robust neural network processes the inputs to estimate the probability of injury, allowing for proactive prevention strategies...
+## Model Details
+- Algorithm: Random Forest Classifier
+- Key Features: Training Intensity, Heart Rate, Recovery Time
+- Risk Assessment: Multi-level classification
+- Performance Metrics: Accuracy, Precision, Recall
 
-Results Visualization: Clear, intuitive feedback with risk assessment insights, helping athletes adjust their training and recovery plans...
+## Contributing
+Feel free to submit issues and enhancement requests!
 
-Data-Driven Decision Making: The system streamlines injury risk analysis, supporting personalized training recommendations and rehabilitation strategies...
-
-This application enhances athlete well-being by integrating sports science, AI, and predictive analytics into a single, easy-to-use tool...
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
