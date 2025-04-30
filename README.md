@@ -1,9 +1,11 @@
-# Elite Sports Injury Prediction System
+# Final year project
+Roll number - 10201100096
+This is a sports injury prediction application software that help users (athletes and coaches especially) predict the likelihood of injury based on certain key factors like heart rate and training intensity, in order to reduce damage to the team an individual
 
-## Overview
+Overview
 This project implements an advanced injury prediction system for athletes using machine learning. The system analyzes various factors including heart rate, training intensity, and recovery time to predict injury risk and provide personalized recommendations.
 
-## Features
+Features
 - Real-time injury risk assessment
 - Smartwatch integration (Fitbit & Garmin)
 - Personalized training recommendations
@@ -11,7 +13,7 @@ This project implements an advanced injury prediction system for athletes using 
 - Interactive dashboard with performance metrics
 - Detailed analysis reports
 
-## Technical Stack
+Technical Stack
 - Python 3.8+
 - Streamlit
 - Scikit-learn
@@ -20,10 +22,10 @@ This project implements an advanced injury prediction system for athletes using 
 - Plotly
 - Imbalanced-learn
 
-## Installation
+Installation
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Injury_Prediction.git
+git clone https://github.com/Afrikind/Injury_Prediction.git
 cd Injury_Prediction
 ```
 
@@ -37,7 +39,7 @@ pip install -r requirements.txt
 streamlit run Injury_Prediction_app.py
 ```
 
-## Project Structure
+ Project Structure
 ```
 Injury_Prediction/
 ├── Injury_Prediction_app.py    # Main application file
@@ -47,21 +49,16 @@ Injury_Prediction/
 └── README.md                 # Documentation
 ```
 
-## Usage
+ Usage
 1. Launch the application
 2. Create an account or login
 3. Navigate through the dashboard
 4. Input athlete data for risk assessment
 5. View detailed analysis and recommendations
 
-## Model Details
+ Model Details
 - Algorithm: Random Forest Classifier
 - Key Features: Training Intensity, Heart Rate, Recovery Time
 - Risk Assessment: Multi-level classification
 - Performance Metrics: Accuracy, Precision, Recall
 
-## Contributing
-Feel free to submit issues and enhancement requests!
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
