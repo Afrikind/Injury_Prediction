@@ -18,6 +18,11 @@ import websocket
 import threading
 import time
 import json
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
 
 # Custom CSS for unique styling
 st.markdown("""
@@ -168,7 +173,6 @@ def load_and_preprocess_data():
     # Handle missing values
     imputer = SimpleImputer(strategy='mean')
     data.iloc[:, :] = imputer.fit_transform(data)
-
     # Select features and target
     features = ['Player_Age', 'Player_Weight', 'Player_Height', 'Previous_Injuries',
                 'Training_Intensity', 'Recovery_Time', 'Heart_Rate']
@@ -239,48 +243,57 @@ def load_and_preprocess_data():
 def build_and_train_model(X, y, features):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
-    # Calculate class weights with more balance
-    class_counts = np.bincount(y_train)
-    total_samples = len(y_train)
-    class_weights = {
-        0: total_samples / (2 * class_counts[0]),
-        1: total_samples / (2 * class_counts[1])
-    }
-    print("Class weights:", class_weights)
-
-    # Create a more balanced model
-    model = RandomForestClassifier(
-        n_estimators=150,  # Reduced number of trees
-        max_depth=5,       # Reduced depth
-        min_samples_split=15,
-        min_samples_leaf=8,
-        class_weight=class_weights,
-        random_state=42,
-        bootstrap=True,
-        max_features='sqrt'
+    # Create the neural network model
+    model = Sequential([
+        # Input layer
+        Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
+        BatchNormalization(),
+        Dropout(0.3),
+        
+        # Hidden layers
+        Dense(32, activation='relu'),
+        BatchNormalization(),
+        Dropout(0.2),
+        
+        Dense(16, activation='relu'),
+        BatchNormalization(),
+        Dropout(0.1),
+        
+        # Output layer
+        Dense(1, activation='sigmoid')
+    ])
+    
+    # Compile the model
+    model.compile(
+        optimizer=Adam(learning_rate=0.001),
+        loss='binary_crossentropy',
+        metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()]
     )
     
-    model.fit(X_train, y_train)
+    # Early stopping to prevent overfitting
+    early_stopping = EarlyStopping(
+        monitor='val_loss',
+        patience=10,
+        restore_best_weights=True
+    )
     
-    # Get predictions and probabilities
-    y_pred = model.predict(X_test)
-    y_prob = model.predict_proba(X_test)[:, 1]
+    # Train the model
+    history = model.fit(
+        X_train, y_train,
+        epochs=100,
+        batch_size=32,
+        validation_split=0.2,
+        callbacks=[early_stopping],
+        verbose=1
+    )
     
-    # Calculate accuracy and other metrics
-    accuracy = model.score(X_test, y_test)
+    # Get predictions
+    y_pred = (model.predict(X_test) > 0.5).astype(int)
+    y_prob = model.predict(X_test)
     
-    # Print feature importance
-    feature_importance = dict(zip(features, model.feature_importances_))
-    print("Feature importance:", feature_importance)
+    # Calculate accuracy
+    accuracy = model.evaluate(X_test, y_test)[1]
     
-    # Create a simple history object for visualization
-    history = type('obj', (object,), {
-        'history': {
-            'loss': [0.5] * 50,
-            'val_loss': [0.5] * 50
-        }
-    })
-
     return model, history, accuracy, X_test, y_test, y_pred, y_prob
 
 def plot_training_history(history):
@@ -309,7 +322,7 @@ def show_model_metrics(X_test, y_test, y_pred, y_prob):
                     text_auto=True,
                     color_continuous_scale="RdBu")
     st.plotly_chart(fig)
-    
+
     # Display classification report
     report = classification_report(y_test, y_pred, output_dict=True)
     report_df = pd.DataFrame(report).transpose()
@@ -357,7 +370,7 @@ def show_dashboard():
     
     st.markdown("<h3 style='text-align: center;'>📈 Model Performance</h3>", unsafe_allow_html=True)
     plot_training_history(history)
-    
+
     # Show model metrics
     show_model_metrics(X_test, y_test, y_pred, y_prob)
     
@@ -461,7 +474,7 @@ def show_prediction():
                                   recovery_heart_ratio, risk_factor, health_index]])
             
             user_input = scaler.transform(user_input)
-            risk_score = model.predict_proba(user_input)[0][1]
+            risk_score = model.predict(user_input)[0][0]  # Changed to use neural network prediction
             
             # Apply more balanced normalization
             normalized_risk = (risk_score - 0.05) / 0.9  # Shift and scale to get more balanced distribution
